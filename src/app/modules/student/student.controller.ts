@@ -5,10 +5,9 @@ import sendResponse from '../../utils/sendResponse';
 
 const catchAsync = (fn: RequestHandler) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    return Promise.resolve(fn(req, res, next)).catch((err) => next(err));
+    Promise.resolve(fn(req, res, next)).catch((err) => next(err));
   };
 };
-
 const getAllStudents: RequestHandler = catchAsync(async (req, res, next) => {
   const students = await StudentServices.getAllStudentFromDB();
   sendResponse(res, {
