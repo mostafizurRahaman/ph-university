@@ -38,7 +38,7 @@ const StudentValidationSchema = z.object({
       bloodGroup: z
         .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
         .optional(),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       contactNo: z.string(),
       emergencyContactNo: z.string(),
       permanentAddress: z.string(),
@@ -46,6 +46,7 @@ const StudentValidationSchema = z.object({
       guardian: GuardianZodValidationSchema,
       localGuardian: LocalGuardianZodValidationSchema,
       profileImg: z.string(),
+      admissionSemester: z.string(),
     }),
   }),
 });

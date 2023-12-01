@@ -96,90 +96,99 @@ const LocalGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent, IStudentModel>({
-  id: {
-    type: String,
-    trim: true,
-    required: [true, 'ID is required'],
-    // unique: true,
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    required: [true, 'User is required'],
-    unique: true,
-    ref: 'User',
-  },
-
-  name: {
-    type: UserSchema,
-    required: [true, 'Name is required'],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female', 'other'],
-      message: '{VALUE} is not a valid gender',
+const studentSchema = new Schema<TStudent, IStudentModel>(
+  {
+    id: {
+      type: String,
+      trim: true,
+      required: [true, 'ID is required'],
+      unique: true,
     },
-    required: [true, 'Gender is required'],
-  },
-  dateOfBirth: {
-    type: Date,
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'],
-      message: '{VALUE} is not a valid blood group',
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User is required'],
+      unique: true,
+      ref: 'User',
+    },
+
+    name: {
+      type: UserSchema,
+      required: [true, 'Name is required'],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female', 'other'],
+        message: '{VALUE} is not a valid gender',
+      },
+      required: [true, 'Gender is required'],
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'],
+        message: '{VALUE} is not a valid blood group',
+      },
+    },
+    email: {
+      type: String,
+      trim: true,
+      unique: true,
+      required: [true, 'Email address is required'],
+    },
+
+    contactNo: {
+      type: String,
+      trim: true,
+      required: [true, 'Contact number is required'],
+    },
+    emergencyContactNo: {
+      type: String,
+      trim: true,
+      required: [true, 'Emergency contact number is required'],
+    },
+    presentAddress: {
+      type: String,
+      trim: true,
+      required: [true, 'Present address is required'],
+    },
+    permanentAddress: {
+      type: String,
+      trim: true,
+      required: [true, 'Permanent address is required'],
+    },
+    guardian: {
+      type: GuardianSchema,
+
+      required: [true, 'Guardian information is required'],
+    },
+    localGuardian: {
+      type: LocalGuardianSchema,
+
+      required: [true, 'Local guardian information is required'],
+    },
+    profileImg: {
+      type: String,
+      trim: true,
+      required: [true, 'Profile image is required'],
+    },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  email: {
-    type: String,
-    trim: true,
-    unique: true,
-    required: [true, 'Email address is required'],
+  {
+    timestamps: true,
   },
-
-  contactNo: {
-    type: String,
-    trim: true,
-    required: [true, 'Contact number is required'],
-  },
-  emergencyContactNo: {
-    type: String,
-    trim: true,
-    required: [true, 'Emergency contact number is required'],
-  },
-  presentAddress: {
-    type: String,
-    trim: true,
-    required: [true, 'Present address is required'],
-  },
-  permanentAddress: {
-    type: String,
-    trim: true,
-    required: [true, 'Permanent address is required'],
-  },
-  guardian: {
-    type: GuardianSchema,
-
-    required: [true, 'Guardian information is required'],
-  },
-  localGuardian: {
-    type: LocalGuardianSchema,
-
-    required: [true, 'Local guardian information is required'],
-  },
-  profileImg: {
-    type: String,
-    trim: true,
-    required: [true, 'Profile image is required'],
-  },
-
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 // create an instance method:
 // studentSchema.methods.isUserExists = async function (id: string) {

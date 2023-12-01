@@ -1,4 +1,3 @@
-
 import { StudentServices } from './student.services';
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';

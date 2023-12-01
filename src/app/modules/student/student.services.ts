@@ -26,7 +26,7 @@ import Student from './student.model';
 // get students:
 const getAllStudentFromDB = async () => {
   const students = await Student.find({});
-  
+
   return students;
 };
 

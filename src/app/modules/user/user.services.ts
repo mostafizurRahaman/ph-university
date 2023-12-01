@@ -4,6 +4,10 @@ import User from './user.model';
 import { TStudent } from '../student/student.interface';
 import Student from '../student/student.model';
 
+import AcademicSemester from '../accademicSemester/academicSemester.model';
+import { generateStudentId } from './user.utils';
+import TAcademicSemester from '../accademicSemester/academicSemester.interface';
+
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   const userData: Partial<TUser> = {};
 
@@ -13,8 +17,18 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   // set  role student:
   userData.role = 'student';
 
-  // set manuallly generated id:
-  userData.id = '203000001';
+  /**
+   *  Generate Student Id With a utils function
+   *  load student semester info with
+   * to load data use @admissionSemester property from @studentData
+   *  then call the generated function pass the semester info
+   */
+  const academicSemester = await AcademicSemester.findOne({
+    _id: studentData.admissionSemester,
+  });
+
+  // call the generate id func:
+  userData.id = await generateStudentId(academicSemester as TAcademicSemester);
 
   const newUser = await User.create(userData);
 

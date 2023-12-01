@@ -38,6 +38,7 @@ export type TStudent = {
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImg: string;
+  admissionSemester: Types.ObjectId;
   isDeleted: boolean;
 };
 
@@ -60,5 +61,6 @@ export type TStudent = {
 // create static method:
 
 export interface IStudentModel extends Model<TStudent> {
+  // eslint-disable-next-line no-unused-vars
   isUserExists(id: string): Promise<TStudent | null>;
 }
