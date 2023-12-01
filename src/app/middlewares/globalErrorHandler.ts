@@ -14,9 +14,9 @@ const globalErrorHandler = async (
   const message = err.message || 'something went wrong';
 
   return res.status(statusCode).json({
-    success: true,
+    success: false,
     message,
-    err: '',
+    err: '' || err,
   });
 };
 

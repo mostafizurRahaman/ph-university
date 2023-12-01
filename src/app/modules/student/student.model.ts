@@ -123,7 +123,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>({
     required: [true, 'Gender is required'],
   },
   dateOfBirth: {
-    type: String,
+    type: Date,
   },
   bloodGroup: {
     type: String,

@@ -1,13 +1,19 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { StudentRoutes } from '../modules/student/student.route';
 import { userRouter } from '../modules/user/user.route';
+import { AcademicSemesterRoutes } from '../modules/accademicSemester/academicSemester.route';
 
 const router = express.Router();
 
 // router.use('/students', StudentRoutes);
 // router.use('/users', userRouter);
 
-const modulesRoute = [
+interface TModuleRoutes {
+  path: string;
+  route: Router;
+}
+
+const modulesRoute: TModuleRoutes[] = [
   {
     path: '/students',
     route: StudentRoutes,
@@ -15,6 +21,10 @@ const modulesRoute = [
   {
     path: '/users',
     route: userRouter,
+  },
+  {
+    path: '/academic-semester',
+    route: AcademicSemesterRoutes,
   },
 ];
 
