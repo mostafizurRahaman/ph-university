@@ -5,6 +5,7 @@ import {
   academicSemesterName,
   months,
 } from './academicSemester.constant';
+import AppError from '../../errors/AppError';
 
 const academicSemesterSchema = new Schema<TAcademicSemester>(
   {
@@ -57,7 +58,8 @@ academicSemesterSchema.pre('save', async function (next) {
   });
 
   if (isSemesterExists) {
-    throw new Error(
+    throw new AppError(
+      404,
       `Academic Semester  ${this.name} for ${this.year} already exists`,
     );
   }
@@ -66,7 +68,7 @@ academicSemesterSchema.pre('save', async function (next) {
 });
 
 const AcademicSemester = model<TAcademicSemester>(
-  'academicSemester',
+  'AcademicSemester',
   academicSemesterSchema,
 );
 

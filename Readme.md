@@ -461,3 +461,100 @@ export default router;
     });
   });
   ```
+
+# `Population ` in Mongoose :
+
+- `populate` used to get `ref` field data.
+
+- ### `populate(propertyName)`:
+
+  - syntax:
+
+  ```ts
+  Model.find().populate('propertyName');
+  ```
+
+  - Example:
+
+  ```ts
+  // get students:
+  const getAllStudentFromDB = async () => {
+    const students = await Student.find({})
+      .populate('admissionSemester') // only single property population
+      .populate({
+        // nested property population
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      });
+
+    return students;
+  };
+  ```
+
+- ### Nested `population`:
+
+  - syntax :
+
+  ```ts
+  Model.find().populate({
+    path: 'propertyName', // parent population
+    populate: {
+      // children property population
+      path: 'propertyName',
+    },
+  });
+  ```
+
+  - Example:
+
+  ```ts
+  const getAllStudentFromDB = async () => {
+    const students = await Student.find({})
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      });
+
+    return students;
+  };
+  ```
+
+# AppError Class :
+
+- create an app error class to pass status code and stack on `Error` class.
+- create a :file_folder:`errors`.
+- create :blue_book:`AppError.ts` file
+- then write below codes :
+
+```ts
+// here we extends Error Class: Error is Super Class and AppError Derived Class
+class AppError extends Error {
+  public statusCode: number;
+
+  constructor(statusCode: number, message: string, stack = '') {
+    // send message to super class with super key:
+    super(message);
+    // assign statusCode : get this code from user:
+    this.statusCode = statusCode;
+
+    if (stack) {
+      this.stack = stack;
+    } else {
+      // call the error captureStackTrace() function
+      // this func get current object and it's constructor.
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+}
+```
+
+- Use Case:
+
+```ts
+throw new AppError(404, 'The user Not exists');
+```

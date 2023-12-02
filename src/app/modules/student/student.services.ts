@@ -1,31 +1,15 @@
 import Student from './student.model';
 
-// const createStudentIntoDB = async (studentData: TStudent) => {
-//   if (await Student.isUserExists(studentData.id)) {
-//     throw new Error('User Already Exists');
-//   }
-//   const result = await Student.create(studentData);
-//   return result;
-
-//   /**
-//    * @instance method used here:
-
-//   const student = new Student(studentData);
-
-//   if (await student.isUserExists(student.id)) {
-//     throw new Error('User Already Exists');
-//   }
-
-//   const result = await student.save();
-
-//   return result;
-
-//   */
-// };
-
 // get students:
 const getAllStudentFromDB = async () => {
-  const students = await Student.find({});
+  const students = await Student.find({})
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    });
 
   return students;
 };
