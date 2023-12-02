@@ -77,7 +77,7 @@ export const updateAcademicDepartmentById = catchAsync(async (req, res) => {
       req.body,
     );
 
-  if (!result.modifiedCount) {
+  if (!result) {
     return sendResponse(res, {
       statusCode: httpStatus.NOT_FOUND,
       success: false,
@@ -93,3 +93,10 @@ export const updateAcademicDepartmentById = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+export const AcademicDepartmentControllers = {
+  createAcademicDepartment,
+  getAllAcademicDepartments,
+  getSingleAcademicDepartment,
+  updateAcademicDepartmentById,
+};
