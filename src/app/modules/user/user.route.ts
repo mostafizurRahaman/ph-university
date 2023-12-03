@@ -5,10 +5,5 @@ import StudentValidationSchema from '../student/student.zod.validation';
 
 const router: Router = express.Router();
 
-router
-  .route('/create-student')
-  .post(
-    validateRequest(StudentValidationSchema),
-    UserControllers.createStudent,
-  );
+router.route('/create-student').post(UserControllers.createStudent);
 export const userRouter = router;

@@ -556,5 +556,254 @@ class AppError extends Error {
 - Use Case:
 
 ```ts
-throw new AppError(404, 'The user Not exists');
+throw new AppError(httpStatus.NOT_FOUND, 'The user Not exists');
+```
+
+# `Transaction` and `Rollback` in Express & Mongoose :
+
+- Transaction has follows and important role `ACID`.
+- A means `Atomicity` , C means `Consistency` , I means `Isolated`, D means `Durability`.
+
+- ### Transaction Steps :
+
+  - #### `startSession()`: `startSession()` used to create a session or transaction environment.
+  - #### `startTransaction()`: `startTransaction()` use to start Transaction.
+  - #### `commitTransaction()`: `commitTransaction()` used to close transaction if transaction held successfully
+  - #### `abortTransaction()` : `abortTransaction()` used to `rollback transaction` if transaction any operation filed.
+  - #### `endSession()`: used to end to session.
+  - #### Flowchart of Transaction and Rollback:
+
+  ```mermaid
+
+  graph TD
+
+    A[startSession]-->B[startTransaction]
+
+   B-(if success)->C[commitTransaction]
+   B-(if failed)->D[abortTransaction]-->E[endSession]
+   C-->E
+
+
+
+  ```
+
+# Errors In Express Application:
+
+- ### Operational Error :
+  - Invalid User Input
+  - Failed to Run Server.
+  - Failed to connect database.
+  - Invalid Auth Token.
+- ### Programmatically Error
+  - using undefined
+  - using properties that not exists.
+  - using number instead of string
+  - using req.params instead of req.query.
+- ### UnhandledRejection (Asynchronous Code)
+- ### Unhandled Exception (Synchronous Code Error)
+
+# Error Handling :
+
+- ### Handle Zod Validation Error :
+
+```ts
+import httpStatus from 'http-status';
+import { ZodError } from 'zod';
+import { ISendErrorResponse } from '../interfaces/errors';
+
+const handleZodError = (err: ZodError): ISendErrorResponse => {
+  const errorSources = err.issues.map((issue) => {
+    return {
+      path: issue.path[issue.path.length - 1],
+      message: issue.message,
+    };
+  });
+
+  return {
+    statusCode: httpStatus.BAD_REQUEST,
+    message: 'Validation Error!!!',
+    errorSources,
+  };
+};
+
+export default handleZodError;
+```
+
+- ### Handle Mongoose Validation Error :
+
+```ts
+import mongoose from 'mongoose';
+import { IErrorSources, ISendErrorResponse } from '../interfaces/errors';
+import httpStatus from 'http-status';
+
+const handleValidationError = (
+  err: mongoose.Error.ValidationError,
+): ISendErrorResponse => {
+  const errorSources: IErrorSources[] = Object.values(err.errors).map(
+    (val: mongoose.Error.ValidatorError | mongoose.Error.CastError) => {
+      return {
+        path: val.path,
+        message: val.message,
+      };
+    },
+  );
+
+  const statusCode: number = httpStatus.BAD_REQUEST;
+
+  return {
+    statusCode,
+    message: 'Validation Error',
+    errorSources,
+  };
+};
+
+export default handleValidationError;
+```
+
+- ### Handler Mongoose Cast Error :
+
+```ts
+import mongoose from 'mongoose';
+import { IErrorSources, ISendErrorResponse } from '../interfaces/errors';
+import httpStatus from 'http-status';
+
+const handleCastError = (err: mongoose.Error.CastError): ISendErrorResponse => {
+  const errorSources: IErrorSources[] = [
+    {
+      path: err.path,
+      message: err.message,
+    },
+  ];
+  return {
+    statusCode: httpStatus.BAD_REQUEST,
+    message: 'Invalid ID',
+    errorSources,
+  };
+};
+
+export default handleCastError;
+```
+
+- Handle Mongoose Duplicate Error:
+
+```ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import httpStatus from 'http-status';
+import { IErrorSources, ISendErrorResponse } from '../interfaces/errors';
+
+const handleDuplicateError = (err: any): ISendErrorResponse => {
+  const key = Object.keys(err.keyPattern)[0];
+  const errorSources: IErrorSources[] = [
+    {
+      path: key,
+      message: ` "The ${err.keyValue[key]}"  is already Exists`,
+    },
+  ];
+  const statusCode: number = httpStatus.BAD_REQUEST;
+
+  return {
+    statusCode,
+    message: `Path "${key}" is already Exists`,
+    errorSources,
+  };
+};
+
+export default handleDuplicateError;
+```
+
+- ### Call the function in Global Error Handler:
+
+```ts
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { ErrorRequestHandler } from 'express';
+import httpStatus from 'http-status';
+import { ZodError } from 'zod';
+import configs from '../configs';
+import { IErrorSources } from '../interfaces/errors';
+import handleZodError from '../errors/handleZodError';
+import handleValidationError from '../errors/handleValidationError';
+import handleCastError from '../errors/handleCastError';
+import handleDuplicateError from '../errors/handleDuplicateError';
+import AppError from '../errors/AppError';
+
+const globalErrorHandler: ErrorRequestHandler = async (err, req, res, next) => {
+  // default setting here:
+  console.log(err);
+  let statusCode: number = httpStatus.INTERNAL_SERVER_ERROR;
+  let message: string = 'Something Went Wrong!!!';
+
+  let errorSources: IErrorSources[] = [
+    {
+      path: '',
+      message: 'Something went wrong!!!',
+    },
+  ];
+
+  if (err instanceof ZodError) {
+    // call zod error handler func:
+    const simplifiedError = handleZodError(err);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (err?.name === 'ValidationError') {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (err?.name === 'CastError') {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+  }
+
+  return res.status(statusCode).send({
+    success: false,
+    message,
+    errorSources,
+    err,
+    stack: configs.node_env === 'development' ? err.stack : null,
+  });
+};
+
+export default globalErrorHandler;
+```
+
+- ### Handle `unhandledRejection` for asynchronous code error:
+
+```ts
+process.on('unhandledRejection', () => {
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+```
+
+- ### Handle `unCaughtException` for synchronous code error:
+
+```ts
+process.on('unCaughtException', () => {
+  process.exit(1);
+});
 ```

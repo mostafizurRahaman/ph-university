@@ -13,7 +13,8 @@ import {
 const UserSchema = new Schema<TUserName>({
   firstName: {
     type: String,
-    required: [true, 'First name is required'],
+    // required: [true, 'First name is required'],
+    required: true,
     trim: true,
     maxLength: [20, "First name can't be more then 20 characters"],
     // validate: {
@@ -181,7 +182,7 @@ const studentSchema = new Schema<TStudent, IStudentModel>(
       required: true,
     },
     academicDepartment: {
-      type:Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'AcademicDepartment',
       required: true,
     },

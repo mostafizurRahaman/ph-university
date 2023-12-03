@@ -50,9 +50,25 @@ const getStudentsWithAggregation = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+// student update route :
+
+const updateStudentById = catchAsync(async (req, res) => {
+  const { studentId } = req.params;
+  const { student } = req.body;
+
+  const result = await StudentServices.updateStudentIntoDB(studentId, student);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student Updated Successfully',
+    data: result,
+  });
+});
 export const StudentController = {
   getAllStudents,
   getStudentById,
   deleteStudentById,
   getStudentsWithAggregation,
+  updateStudentById,
 };

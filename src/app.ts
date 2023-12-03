@@ -11,8 +11,14 @@ const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
-// application routes:
+// test route:
+app.get('/test', (req: Request, res: Response) => {
+  const a = 20;
+  const b = 40;
+  res.send({ a, b });
+});
 
+// application routes:
 app.use('/api/v1', router);
 // main route:
 app.get('/', (req: Request, res: Response) => {
@@ -28,3 +34,4 @@ app.use(notFound);
 // export :
 
 export default app;
+
