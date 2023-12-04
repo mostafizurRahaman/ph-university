@@ -807,3 +807,76 @@ process.on('unCaughtException', () => {
   process.exit(1);
 });
 ```
+
+# `Search Term` in Express Mongoose with `$regex`:
+
+- we can received query `searchTerm` from frontend in `req.query`
+- then we write a query like below:
+- we use `$or` to search from multiple filed :
+- The search pattern syntax:
+
+```ts
+  Model.find({
+    $or: [
+      {<field>: {$regex: searchPattern, $options: "i"}},
+      {<field>: {$regex: searchPattern, $options: "i"}},
+      {<field>: {$regex: searchPattern, $options: "i"}},
+    ]
+
+  })
+
+/**
+ * access @query property from @request object.
+ * then get the @searchTerm value
+ * we want to search in our collection by using @searchTerm in some specific fileds.
+ * we create an @array of field by using which we need to @search .
+ * we create a query by using @map and pass that mapping @return value as $or value
+ * the query pattern :
+ * {$or : [{field: {$regex: searchTerm , $options: 'i'} }, {field: {$regex: searchTerm , $options: 'i'} }]}
+ */
+```
+
+- we can build this by using `array.prototype.map()`:
+
+```ts
+{
+  $or: ['fieldOne', 'fieldTwo', 'fieldThree'].map((filed) => {
+    return {
+      [field]: { $regex: searchPattern, $options: 'i' },
+    };
+  });
+}
+```
+
+- Example:
+
+```ts
+// get students:
+const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  // searchTerm :
+  let searchTerm: string = '';
+
+  if (query?.searchTerm) {
+    searchTerm = query.searchTerm as string;
+  }
+
+  console.log(searchTerm);
+
+  const students = await Student.find({
+    $or: ['email', 'name.firstName', 'name.middleName'].map((field: string) => {
+      return {
+        [field]: { $regex: searchTerm, $options: 'i' },
+      };
+    }),
+  })
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    });
+
+  return students;
+};
+```
