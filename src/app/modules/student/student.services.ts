@@ -6,34 +6,49 @@ import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import { TStudent } from './student.interface';
 
+/* 
 // get students:
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  // copy base query :
+  const queryObj = { ...query };
+
+  // excluding fields array:
+  const excludeFields = ['searchTerm', 'sort', 'limit'];
+
+  // remove excluding filed from queryObj:
+  excludeFields.forEach((el: string) => delete queryObj[el]);
+
   // searchTerm :
   let searchTerm: string = '';
-
   if (query?.searchTerm) {
     searchTerm = query.searchTerm as string;
   }
 
-  console.log(searchTerm);
+  // sorting :
+  let sort: string = '-createdAt';
+  if (query.sort) {
+    sort = query.sort as string;
+  }
 
-  /**
-   * access @query property from @request object.
-   * then get the @searchTerm value
-   * we want to search in our collection by using @searchTerm in some specific fileds.
-   * we create an @array of field by using which we need to @search .
-   * we create a query by using @map and pass that mapping @return value as $or value
-   * the query pattern :
-   * {$or : [{field: {$regex: searchTerm , $options: 'i'} }, {field: {$regex: searchTerm , $options: 'i'} }]}
-   */
+  // limiting :
+  let limit: number = 1;
+  if (query.limit) {
+    limit = Number(query.limit as string);
+  }
 
-  const students = await Student.find({
+  // searchQuery :
+  const searchQuery = Student.find({
     $or: ['email', 'name.firstName', 'name.middleName'].map((field: string) => {
       return {
         [field]: { $regex: searchTerm, $options: 'i' },
       };
     }),
-  })
+  });
+
+  console.log(query, queryObj);
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -42,7 +57,71 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
       },
     });
 
-  return students;
+  // sortQuery :
+  const sortQuery = filterQuery.sort(sort);
+
+  // limiting Query:
+  const limitQuery = await sortQuery.limit(limit);
+
+  return limitQuery;
+};
+ */
+
+const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  console.log(query);
+  // copy the query:
+  const queryObj = { ...query };
+
+  // excluding fields :
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page'];
+  excludeFields.forEach((el: string) => delete queryObj[el]);
+
+  // search Query :
+  let searchTerm: string = '';
+  if (query.searchTerm) {
+    searchTerm = query.searchTerm as string;
+  }
+
+  // sort Query:
+  const sort: string = (query.sort as string) || '-createdAt';
+
+  // Query Limit :
+  const limit: number = query.limit ? Number(query.limit) : 1;
+
+  console.log(queryObj);
+
+  // searchQuery:
+  const searchQuery = Student.find({
+    $or: ['name.firstName', 'email', 'presentAddress'].map((field: string) => {
+      return {
+        [field]: { $regex: searchTerm, $options: 'i' },
+      };
+    }),
+  });
+
+  // Filter Query:
+  const FilterQuery = searchQuery
+    .find(queryObj)
+    .populate('admissionSemester')
+    .populate({
+      path: 'academicDepartment',
+      populate: {
+        path: 'academicFaculty',
+      },
+    });
+
+  // Sort Query :
+
+  const sortQuery = FilterQuery.sort(sort);
+
+  // Limit Query:
+  const limitQuery = await sortQuery
+    .limit(limit)
+    .select('name email');
+
+  return limitQuery;
+
+  //
 };
 
 // get data from db with aggregation:
