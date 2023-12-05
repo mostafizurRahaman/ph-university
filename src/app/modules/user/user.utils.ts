@@ -49,3 +49,22 @@ export const generateFacultyId = async () => {
   const facultyId = 'F-' + incrementId.toString().padStart(4, '0');
   return facultyId;
 };
+
+const findLastAdminId = async () => {
+  const lastAdmin = await User.findOne({ role: 'admin' }, { id: 1 }).sort({
+    createdAt: -1,
+  });
+
+  return lastAdmin?.id.substring(2);
+};
+
+export const generateAdminId = async () => {
+  const adminId = await findLastAdminId();
+  let currentId = (0).toString();
+  if (adminId) {
+    currentId = adminId;
+  }
+
+  const newId = 'A-' + (Number(currentId) + 1).toString().padStart(4, '0');
+  return newId;
+};

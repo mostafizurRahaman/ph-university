@@ -10,7 +10,7 @@ import {
 } from './student.interface';
 
 // import validator from 'validator'
-const UserSchema = new Schema<TUserName>({
+export const UserSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     // required: [true, 'First name is required'],
