@@ -36,5 +36,3 @@ process.on('uncaughtException', () => {
   console.log(`Server detected unCaughtException 😡`);
   process.exit(1);
 });
-
-

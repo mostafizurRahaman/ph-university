@@ -4,4 +4,3 @@ export const studentSearchFields = [
   'email',
   'presentAddress',
 ];
-
