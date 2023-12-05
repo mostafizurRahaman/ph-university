@@ -6,11 +6,13 @@ import { TStudent } from '../student/student.interface';
 import Student from '../student/student.model';
 
 import AcademicSemester from '../accademicSemester/academicSemester.model';
-import { generateStudentId } from './user.utils';
+import { generateFacultyId, generateStudentId } from './user.utils';
 import TAcademicSemester from '../accademicSemester/academicSemester.interface';
 import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import { TFaculty } from '../faculty/faculty.interface';
+import Faculty from '../faculty/faculty.model';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
@@ -70,6 +72,52 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   }
 };
 
+const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+  // create new user:
+  const userData: Partial<TUser> = {};
+
+  // set faculty role:
+  userData.role = 'faculty';
+
+  // if password not given set default password:
+  userData.password = password || configs.default_password;
+
+  // generate a new faculty:
+  userData.id = await generateFacultyId();
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // transaction-1
+    const newUser = await User.create([userData], { session });
+
+    if (!newUser.length) {
+      throw new Error('Failed  to Create User!!!');
+    }
+
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
+
+    const newFaculty = await Faculty.create([payload], { session });
+
+    if (!newFaculty.length) {
+      throw new Error('Failed to Create  Faculty');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newFaculty[0];
+  } catch (err : any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
+};
+
 export const UserServices = {
   createStudentIntoDB,
+  createFacultyIntoDB,
 };

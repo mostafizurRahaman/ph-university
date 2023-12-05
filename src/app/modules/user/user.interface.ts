@@ -12,3 +12,14 @@ export type TUser = {
 //   role: string;
 //   password?: string;
 // };
+
+export type TGender = 'male' | 'female' | 'others';
+export type TBloodGroup =
+  | 'A+'
+  | 'A-'
+  | 'B+'
+  | 'B-'
+  | 'AB+'
+  | 'AB-'
+  | 'O+'
+  | 'O-';

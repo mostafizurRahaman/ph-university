@@ -1,4 +1,5 @@
 import TAcademicSemester from '../accademicSemester/academicSemester.interface';
+
 import User from './user.model';
 
 export const findLastStudentId = async () => {
@@ -16,7 +17,6 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
 
   const lastSemesterYear = lastStudent?.substring(0, 4);
   const lastSemesterCode = lastStudent?.substring(4, 6);
-  console.log(lastStudent, lastSemesterCode, lastSemesterYear);
 
   if (lastStudent) {
     if (
@@ -29,4 +29,23 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
 
   const incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
   return `${payload.year}${payload.code}${incrementId}`;
+};
+
+const loadLastFacultyId = async () => {
+  const lastId = await User.findOne({ role: 'faculty' }, { id: 1, _id: 1 })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return lastId?.id.substring(2);
+};
+
+export const generateFacultyId = async () => {
+  let currentId = (0).toString();
+  const lastFacultyId = await loadLastFacultyId();
+  if (lastFacultyId) {
+    currentId = lastFacultyId;
+  }
+  const incrementId = Number(currentId) + 1;
+  const facultyId = 'F-' + incrementId.toString().padStart(4, '0');
+  return facultyId;
 };
