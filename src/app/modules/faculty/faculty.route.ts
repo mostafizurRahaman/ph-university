@@ -8,7 +8,7 @@ const router = express.Router();
 router.route('/').get(FacultyControllers.getAllFaculties);
 
 router
-  .route('/:facultyId')
+  .route('/:id')
   .get(FacultyControllers.getSingleFacultyById)
   .patch(
     validateRequest(updateFacultyValidationSchema),

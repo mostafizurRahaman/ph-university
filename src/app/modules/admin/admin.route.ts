@@ -8,7 +8,7 @@ const router = express.Router();
 router.route('/').get(AdminControllers.getAllAdmins);
 
 router
-  .route('/:adminId')
+  .route('/:id')
   .get(AdminControllers.getSingleAdminById)
   .patch(
     validateRequest(AdminValidations.updateAdminValidationSchema),

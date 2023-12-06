@@ -20,8 +20,8 @@ const getAllAdminFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
-const getSingleAdminFromDB = async (adminId: string) => {
-  const admin = await Admin.isAdminExists(adminId);
+const getSingleAdminFromDB = async (id: string) => {
+  const admin = await Admin.isAdminExists(id);
   if (!admin) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -33,10 +33,10 @@ const getSingleAdminFromDB = async (adminId: string) => {
 };
 
 const updateSingleAdminIntoDB = async (
-  adminId: string,
+  id: string,
   payload: Partial<TAdmin>,
 ) => {
-  if (!(await Admin.isAdminExists(adminId))) {
+  if (!(await Admin.isAdminExists(id))) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Admin Not Exists with This Id!!!',
@@ -54,8 +54,8 @@ const updateSingleAdminIntoDB = async (
   }
 
   // transaction -1:
-  const result = await Admin.findOneAndUpdate(
-    { id: adminId },
+  const result = await Admin.findByIdAndUpdate(
+    id,
     { $set: modifiedDocument },
     { new: true, runValidators: true },
   );
@@ -63,8 +63,8 @@ const updateSingleAdminIntoDB = async (
   return result;
 };
 
-const deleteSingleAdminFromDB = async (adminId: string) => {
-  if (!(await Admin.isAdminExists(adminId))) {
+const deleteSingleAdminFromDB = async (id: string) => {
+  if (!(await Admin.isAdminExists(id))) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Admin Not Exists with This Id!!!',
@@ -77,8 +77,8 @@ const deleteSingleAdminFromDB = async (adminId: string) => {
   try {
     session.startTransaction();
 
-    const deleteAdmin = await Admin.findOneAndUpdate(
-      { id: adminId },
+    const deleteAdmin = await Admin.findByIdAndUpdate(
+      id,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
@@ -86,8 +86,9 @@ const deleteSingleAdminFromDB = async (adminId: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete Admin!!!');
     }
 
-    const deleteUser = await User.findOneAndUpdate(
-      { id: adminId },
+    const userId = deleteAdmin.user;
+    const deleteUser = await User.findByIdAndUpdate(
+      userId,
       { $set: { isDeleted: true } },
       { new: true, session },
     );
