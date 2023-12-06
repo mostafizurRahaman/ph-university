@@ -115,23 +115,26 @@ const getAllStudentFromDBWithAggregation = async () => {
 
 // get single student with student id:
 const getStudentByIdFromDB = async (id: string) => {
-  const student = await Student.findOne({ id });
+  if (!(await Student.isUserExists(id))) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Doesn't Exists!!!");
+  }
+
+  const student = await Student.findById(id);
   return student;
 };
 
 // delete single documents:
 const deleteStudentByIdFromDB = async (id: string) => {
-  const session = await mongoose.startSession();
-
   if (!(await Student.isUserExists(id))) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Doesn't Exists!!!");
   }
+  const session = await mongoose.startSession();
   try {
     // start Session()
     session.startTransaction();
     // transaction 1:
-    const deletedStudents = await Student.findOneAndUpdate(
-      { id },
+    const deletedStudent = await Student.findByIdAndUpdate(
+      id,
       {
         $set: {
           isDeleted: true,
@@ -143,13 +146,14 @@ const deleteStudentByIdFromDB = async (id: string) => {
       },
     );
 
-    if (!deletedStudents) {
+    if (!deletedStudent) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student!!');
     }
 
+    const userId = deletedStudent.user;
     // transaction 2:
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       {
         $set: {
           isDeleted: true,
@@ -166,7 +170,7 @@ const deleteStudentByIdFromDB = async (id: string) => {
     }
     await session.commitTransaction();
     await session.endSession();
-    return deletedStudents;
+    return deletedStudent;
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
@@ -175,10 +179,10 @@ const deleteStudentByIdFromDB = async (id: string) => {
 };
 
 // update student services:
-const updateStudentIntoDB = async (
-  studentId: string,
-  payload: Partial<TStudent>,
-) => {
+const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
+  if (!(await Student.isUserExists(id))) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Doesn't Exists!!!");
+  }
   const { name, guardian, localGuardian, ...remainingInfo } = payload;
 
   const modifiedDocument: Record<string, unknown> = { ...remainingInfo };
@@ -201,8 +205,8 @@ const updateStudentIntoDB = async (
     }
   }
 
-  const result = await Student.findOneAndUpdate(
-    { id: studentId },
+  const result = await Student.findByIdAndUpdate(
+    id,
     { $set: modifiedDocument },
     { new: true, runValidators: true },
   );

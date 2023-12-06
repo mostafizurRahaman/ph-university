@@ -11,14 +11,14 @@ router.get('/', StudentController.getAllStudents);
 
 router.get('/aggregate', StudentController.getStudentsWithAggregation);
 
-router.get('/:studentId', StudentController.getStudentById);
+router.get('/:id', StudentController.getStudentById);
 
 router.patch(
-  '/:studentId',
+  '/:id',
   validateRequest(UpdateStudentValidationSchema),
   StudentController.updateStudentById,
 );
 
-router.delete('/:studentId', StudentController.deleteStudentById);
+router.delete('/:id', StudentController.deleteStudentById);
 
 export const StudentRoutes = router;

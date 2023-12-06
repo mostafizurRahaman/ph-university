@@ -15,9 +15,9 @@ const getAllStudents = catchAsync(async (req, res) => {
 
 const getStudentById = catchAsync(async (req, res) => {
   // get  id:
-  const { studentId } = req.params;
+  const { id } = req.params;
 
-  const student = await StudentServices.getStudentByIdFromDB(studentId);
+  const student = await StudentServices.getStudentByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -28,9 +28,9 @@ const getStudentById = catchAsync(async (req, res) => {
 });
 
 const deleteStudentById = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
 
-  const result = await StudentServices.deleteStudentByIdFromDB(studentId);
+  const result = await StudentServices.deleteStudentByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -54,10 +54,10 @@ const getStudentsWithAggregation = catchAsync(async (req, res) => {
 // student update route :
 
 const updateStudentById = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
   const { student } = req.body;
 
-  const result = await StudentServices.updateStudentIntoDB(studentId, student);
+  const result = await StudentServices.updateStudentIntoDB(id, student);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
