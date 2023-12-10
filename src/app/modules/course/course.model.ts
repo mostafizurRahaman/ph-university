@@ -1,18 +1,23 @@
 import { Schema, model } from 'mongoose';
-import { ICourse, IPreRequisiteCourse } from './course.interface';
+import { ICourse, ICourseModel, IPreRequisiteCourse } from './course.interface';
 
-const PreRequisiteCoursesSchema = new Schema<IPreRequisiteCourse>({
-  course: {
-    type: Schema.Types.ObjectId,
-    ref: 'Course',
+const PreRequisiteCoursesSchema = new Schema<IPreRequisiteCourse>(
+  {
+    course: {
+      type: Schema.Types.ObjectId,
+      ref: 'Course',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  isDeleted: {
-    type: Boolean,
-    default: false,
+  {
+    _id: false,
   },
-});
+);
 
-const courseSchema = new Schema<ICourse>({
+const courseSchema = new Schema<ICourse, ICourseModel>({
   title: {
     type: String,
     unique: true,
@@ -61,6 +66,13 @@ courseSchema.pre('aggregate', async function (next) {
   next();
 });
 
-const Course = model<ICourse>('Course', courseSchema);
+// create a course static method which helps us to check is course exists or not?
+courseSchema.statics.isCourseExists = async function (code: number) {
+  const exists = await Course.findOne({ code });
+
+  return exists;
+};
+
+const Course = model<ICourse, ICourseModel>('Course', courseSchema);
 
 export default Course;

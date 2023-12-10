@@ -1,4 +1,5 @@
-import { Types } from 'mongoose';
+/* eslint-disable no-unused-vars */
+import { Model, Types } from 'mongoose';
 
 export interface IPreRequisiteCourse {
   course: Types.ObjectId;
@@ -12,4 +13,9 @@ export interface ICourse {
   credits: number;
   preRequisiteCourses: IPreRequisiteCourse[];
   isDeleted: boolean;
+}
+
+// create a model type :
+export interface ICourseModel extends Model<ICourse> {
+  isCourseExists(code: number): Promise<ICourse | null>;
 }
