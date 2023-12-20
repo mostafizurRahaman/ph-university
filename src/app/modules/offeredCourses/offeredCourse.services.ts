@@ -60,14 +60,6 @@ const createOfferedCourseIntoDB = async (payload: IOfferedCourse) => {
     );
   }
 
-  // check is academic Department get matched with academic faculty?
-  if (academicFaculty !== isAcademicDepartmentExits.academicFaculty) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'Academic Department not exits on Provided faculty!!!',
-    );
-  }
-
   // check is courseExits Or not ?:
   const isCourseExists = await Course.findById(course);
   if (!isCourseExists) {
@@ -81,6 +73,18 @@ const createOfferedCourseIntoDB = async (payload: IOfferedCourse) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Faculty is not Exists!!!');
   }
 
+  // check  is academicDepartment belongs to academicFaculty?:
+  const isDepartmentBelogToAcademicFaculty = await AcademicDepartment.findOne({
+    _id: academicDepartment,
+    academicFaculty,
+  });
+
+  if (!isDepartmentBelogToAcademicFaculty) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `${isAcademicDepartmentExits.name} is not belog to ${isAcademicFacultyExists.name}`,
+    );
+  }
   const academicSemester = isSemesterRegistrationExits.academicSemester;
 
   const offeredCourse = await OfferedCourse.create({
