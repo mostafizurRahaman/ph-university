@@ -45,13 +45,14 @@ const offeredCourseSchema = new Schema(
       required: true,
       min: 1,
     },
-    days: {
-      type: String,
-      enum: {
-        values: days,
+    days: [
+      {
+        type: String,
+        enum: {
+          values: days,
+        },
       },
-      required: true,
-    },
+    ],
     startTime: {
       type: String,
       required: true,
