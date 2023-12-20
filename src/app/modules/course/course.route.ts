@@ -15,6 +15,20 @@ router
 router.route('/').get(CoursesController.getAllCourses);
 
 router
+  .route('/:courseId/assign-faculties')
+  .put(
+    validateRequest(CourseValidationSchema.CourseFacultiesValidation),
+    CoursesController.assignFaculties,
+  );
+
+router
+  .route('/:courseId/remove-faculties')
+  .put(
+    validateRequest(CourseValidationSchema.CourseFacultiesValidation),
+    CoursesController.removeFaculties,
+  );
+
+router
   .route('/:id')
   .get(CoursesController.getSingleCourseById)
   .delete(CoursesController.deleteSingleCourseById)

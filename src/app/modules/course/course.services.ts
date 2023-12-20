@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import { courseSearchableFields } from './course.constant';
-import { ICourse } from './course.interface';
-import Course from './course.model';
+import { ICourse, TCourseFaculty } from './course.interface';
+import Course, { CourseFaculty } from './course.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 
 // create courses:
 const createCourseIntoDB = async (payload: ICourse) => {
@@ -125,7 +125,7 @@ const updateSingleCourseIntoDB = async (
 
     await session.commitTransaction();
     await session.endSession();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
@@ -151,10 +151,58 @@ const deleteSingleCourseFromDB = async (id: string) => {
   return course;
 };
 
+// assign course faculties services :
+
+const assignFacultiesWithCourseIntoDB = async (
+  id: string,
+  payload: TCourseFaculty,
+) => {
+  const result = await CourseFaculty.findByIdAndUpdate(
+    id,
+    {
+      course: id,
+      $addToSet: {
+        faculties: { $each: payload },
+      },
+    },
+    {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  return result;
+};
+
+// remove faculties from course :
+const removeFacultiesFromCourseFromDB = async (
+  id: string,
+  payload: TCourseFaculty,
+) => {
+  console.log(payload);
+  const result = await CourseFaculty.findByIdAndUpdate(
+    id,
+    {
+      $pull: {
+        faculties: { $in: payload},
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  return result;
+};
+
 export const CourseServices = {
   createCourseIntoDB,
   getAllCoursesFromDB,
   getSingleCourseFromDB,
   deleteSingleCourseFromDB,
   updateSingleCourseIntoDB,
+  assignFacultiesWithCourseIntoDB,
+  removeFacultiesFromCourseFromDB,
 };

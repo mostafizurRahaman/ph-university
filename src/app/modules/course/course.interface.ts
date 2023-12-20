@@ -19,3 +19,8 @@ export interface ICourse {
 export interface ICourseModel extends Model<ICourse> {
   isCourseExists(code: number): Promise<ICourse | null>;
 }
+
+export type TCourseFaculty = {
+  course: Types.ObjectId;
+  faculties: Types.ObjectId[];
+};
