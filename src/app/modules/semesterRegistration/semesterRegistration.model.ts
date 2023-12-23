@@ -36,6 +36,10 @@ const semesterRegistrationSchema = new Schema<ISemesterRegistration>(
       default: 15,
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 
 import { IOfferedCourse } from './offeredCourses.interface';
 
-const offeredCourseSchema = new Schema(
+const offeredCourseSchema = new Schema<IOfferedCourse>(
   {
     semesterRegistration: {
       type: Schema.Types.ObjectId,
@@ -60,6 +60,10 @@ const offeredCourseSchema = new Schema(
     endTime: {
       type: String,
       required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

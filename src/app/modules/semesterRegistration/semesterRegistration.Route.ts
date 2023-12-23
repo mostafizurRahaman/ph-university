@@ -23,7 +23,8 @@ router
       semesterRegistrationValidation.updateSemesterRegistrationValidationSchema,
     ),
     SemesterRegistrationControllers.updateAcademicRegisteredSemester,
-  );
+  )
+  .delete(SemesterRegistrationControllers.deleteSemesterRegistration);
 
 // get all semester registration:
 

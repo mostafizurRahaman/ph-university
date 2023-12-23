@@ -14,4 +14,11 @@ export interface IOfferedCourse {
   days: TDays[];
   startTime: string;
   endTime: string;
+  isDeleted?: boolean;
+}
+
+export interface ISchedule {
+  days: TDays[];
+  startTime: string;
+  endTime: string;
 }

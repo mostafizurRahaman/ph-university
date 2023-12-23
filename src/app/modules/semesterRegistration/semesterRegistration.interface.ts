@@ -9,4 +9,5 @@ export interface ISemesterRegistration {
   endDate: Date;
   minCredit: number;
   maxCredit: number;
+  isDeleted?: boolean;
 }

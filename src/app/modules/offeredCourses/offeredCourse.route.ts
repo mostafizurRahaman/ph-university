@@ -14,4 +14,17 @@ router
     OfferedCourseControllers.createOfferedCourse,
   );
 
+router
+  .route('/:id')
+  .get(OfferedCourseControllers.getSingleOfferedCourse)
+  .patch(
+    validateRequest(
+      offeredCourseValidationSchema.updateOfferedCourseValidationSchema,
+    ),
+    OfferedCourseControllers.updateOfferedCourse,
+  )
+  .delete(OfferedCourseControllers.deleteOfferedCourse);
+
+router.route('/').get(OfferedCourseControllers.getAllOfferedCourse);
+
 export const offeredCourseRoutes = router;
