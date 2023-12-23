@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Model } from 'mongoose';
+import { USER_ROLE } from './user.contants';
 
 export type TUser = {
   id: string;
@@ -36,3 +37,7 @@ export interface IUserModel extends Model<TUser> {
     hashedPassword: string,
   ): Promise<boolean>;
 }
+
+// define a type for USER_ROLE:
+
+export type TUserRole = keyof typeof USER_ROLE;
