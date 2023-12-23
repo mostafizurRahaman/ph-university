@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-import { TUser } from './user.interface';
+import { IUserModel, TUser } from './user.interface';
 import bcrypt from 'bcrypt';
 import configs from '../../configs';
-const UserSchema = new Schema<TUser>(
+const UserSchema = new Schema<TUser, IUserModel>(
   {
     id: {
       type: String,
@@ -47,6 +47,31 @@ const UserSchema = new Schema<TUser>(
   },
 );
 
+// user static methods created:
+
+// check is user exist ?:
+UserSchema.statics.isUserExistsByCustomId = async function (id: string) {
+  return await User.findOne({ id });
+};
+
+// check is user deleted?:
+UserSchema.statics.isUserDeleted = async function (user: TUser) {
+  return user?.isDeleted;
+};
+
+// check is user Null:
+UserSchema.statics.isUserBlocked = async function (user: TUser) {
+  return user.status === 'blocked';
+};
+
+// compare password :
+UserSchema.statics.compareUserPassword = async function (
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
 UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(
     this.password,
@@ -59,6 +84,6 @@ UserSchema.post('save', async function (doc, next) {
   doc.password = '';
   next();
 });
-const User = model<TUser>('User', UserSchema);
+const User = model<TUser, IUserModel>('User', UserSchema);
 
 export default User;

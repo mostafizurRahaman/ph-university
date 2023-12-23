@@ -11,4 +11,5 @@ export = {
   bcrypt_solt_rounds: process.env.BCRYPT_SOLT_ROUNDS,
   default_password: process.env.DEFAULT_PASSWORD,
   node_env: process.env.NODE_ENV,
+  jwt_access_token: process.env.JWT_ACCESS_SECRET,
 };

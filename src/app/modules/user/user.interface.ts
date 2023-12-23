@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+import { Model } from 'mongoose';
+
 export type TUser = {
   id: string;
   password: string;
@@ -23,3 +26,13 @@ export type TBloodGroup =
   | 'AB-'
   | 'O+'
   | 'O-';
+
+export interface IUserModel extends Model<TUser> {
+  isUserExistsByCustomId(id: string): Promise<TUser | null>;
+  isUserDeleted(id: TUser): Promise<boolean>;
+  isUserBlocked(user: TUser): Promise<boolean>;
+  compareUserPassword(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean>;
+}
