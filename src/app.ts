@@ -3,12 +3,14 @@ import cors from 'cors';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import { notFound } from './app/middlewares/notFound';
 import router from './app/routes';
+import cookieParser from 'cookie-parser';
 
 // create application :
 const app: Application = express();
 
 // parsers :
 app.use(express.json());
+app.use(cookieParser())
 app.use(cors());
 
 // test route:

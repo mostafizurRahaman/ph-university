@@ -14,11 +14,15 @@ const UserSchema = new Schema<TUser, IUserModel>(
     password: {
       type: String,
       trim: true,
+      select: 0,
       required: [true, 'Password is required'],
     },
     needsPasswordChanged: {
       type: Boolean,
       default: true,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
     role: {
       type: String,
@@ -51,7 +55,7 @@ const UserSchema = new Schema<TUser, IUserModel>(
 
 // check is user exist ?:
 UserSchema.statics.isUserExistsByCustomId = async function (id: string) {
-  return await User.findOne({ id });
+  return await User.findOne({ id }).select('+password');
 };
 
 // check is user deleted?:
@@ -62,6 +66,16 @@ UserSchema.statics.isUserDeleted = async function (user: TUser) {
 // check is user Null:
 UserSchema.statics.isUserBlocked = async function (user: TUser) {
   return user.status === 'blocked';
+};
+
+// check Is JWT Issued Before Password Change:
+UserSchema.statics.isJWTIssuedBeforePasswordChanged = (
+  passwordChangedTimeStamps: Date,
+  jwtIssuedTimeStamps: number,
+) => {
+  const passwordChangeTime =
+    new Date(passwordChangedTimeStamps).getTime() / 1000;
+  return passwordChangeTime > jwtIssuedTimeStamps;
 };
 
 // compare password :

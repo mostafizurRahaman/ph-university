@@ -6,6 +6,7 @@ export type TUser = {
   id: string;
   password: string;
   needsPasswordChanged?: boolean;
+  passwordChangedAt?: Date;
   role: 'admin' | 'student' | 'faculty';
   status: 'in-progress' | 'blocked';
   isDeleted?: boolean;
@@ -36,6 +37,10 @@ export interface IUserModel extends Model<TUser> {
     plainTextPassword: string,
     hashedPassword: string,
   ): Promise<boolean>;
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimeStamps: Date,
+    jwtIssuedTimeStamps: number,
+  ): boolean;
 }
 
 // define a type for USER_ROLE:
