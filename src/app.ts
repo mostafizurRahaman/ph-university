@@ -10,8 +10,8 @@ const app: Application = express();
 
 // parsers :
 app.use(express.json());
-app.use(cookieParser())
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ origin: ['http://localhost:5173'] }));
 
 // test route:
 app.get('/test', (req: Request, res: Response) => {

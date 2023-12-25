@@ -14,14 +14,25 @@ const changePasswordValidationSchema = z.object({
   }),
 });
 
-// refresh token :
+// refresh token  validation schema:
 const refreshTokenValidationSchema = z.object({
   cookies: z.object({
     refresh_token: z.string(),
   }),
 });
+
+// forget password validation schema:
+const forgetPasswordValidationSchema = z.object({
+  body: z.object({
+    id: z.string(),
+  }),
+});
+
+
+
 export const AuthValidations = {
   loginValidationSchema,
   changePasswordValidationSchema,
   refreshTokenValidationSchema,
+  forgetPasswordValidationSchema,
 };

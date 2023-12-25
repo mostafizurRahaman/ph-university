@@ -24,6 +24,13 @@ const UserSchema = new Schema<TUser, IUserModel>(
     passwordChangedAt: {
       type: Date,
     },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      required: true,
+    },
     role: {
       type: String,
       enum: {

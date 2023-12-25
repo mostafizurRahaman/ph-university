@@ -15,4 +15,6 @@ export = {
   jwt_refresh_token: process.env.JWT_REFRESH_SECRET,
   jwt_access_expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
   jwt_refresh_expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+  my_gmail_app_password: process.env.MY_GMAIL_APP_PASSWORD,
+  reset_password_frontend_url: process.env.RESET_PASSWORD_FRONTEND_URL,
 };

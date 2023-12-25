@@ -7,6 +7,7 @@ import configs from '../../configs';
 
 import bcrypt from 'bcrypt';
 import { createToken } from './auth.utils';
+import { sendEmail } from '../../utils/sendEmail';
 
 // login :
 const loginServices = async (payload: ILoginUser) => {
@@ -175,8 +176,51 @@ const refreshToken = async (token: string) => {
   };
 };
 
+// forget password services:
+const forgetPassword = async (userId: string) => {
+  // check is user Exists with this Id:
+  const user = await User.isUserExistsByCustomId(userId);
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'User Is Not Exists With this Id!!!',
+    );
+  }
+
+  // check is user deleted?:
+  if (await User.isUserDeleted(user)) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Your Account is Deleted!!!');
+  }
+
+  // check is user blocked :
+  if (await User.isUserBlocked(user)) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Your Account is Blocked!!!');
+  }
+
+  // reset password payload:
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role,
+  };
+
+  // generate an  resetToken with Jwt:
+
+  const resetToken = createToken(
+    jwtPayload,
+    configs.jwt_access_token as string,
+    '10m',
+  );
+
+  // create a new link:
+  const resetUILink = `${configs.reset_password_frontend_url}?id=${user.id}&token=${resetToken}`;
+
+  // return resetUILink;
+  sendEmail(user.email, resetUILink);
+};
 export const AuthServices = {
   loginServices,
   changePasswordIntoDB,
   refreshToken,
+  forgetPassword,
 };

@@ -26,6 +26,9 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // if password not given use default password:
   userData.password = password || (configs.default_password as string);
 
+  // set user email:
+  userData.email = payload.email;
+
   // set  role student:
   userData.role = 'student';
 
@@ -85,6 +88,9 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   // set faculty role:
   userData.role = 'faculty';
 
+  // set user email:
+  userData.email = payload.email;
+
   // if password not given set default password:
   userData.password = password || configs.default_password;
 
@@ -133,6 +139,9 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 
   // if password not given set default password:
   userData.password = password || configs.default_password;
+
+  // set user email:
+  userData.email = payload.email;
 
   // generate an id for admin :
   userData.id = await generateAdminId();
