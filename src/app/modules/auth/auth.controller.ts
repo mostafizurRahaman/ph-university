@@ -48,7 +48,7 @@ const getRefreshToken = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Access Token is Retreived Successffully!!!',
+    message: 'Access Token is Retrieved Successfully!!!',
     data: result,
   });
 });
@@ -61,7 +61,21 @@ const forgetPassword = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Password is reset Successffully!!!',
+    message: 'Password is reset Successfully!!!',
+    data: result,
+  });
+});
+
+// reset password controller :
+const resetPassword = catchAsync(async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  const result = await AuthServices.resetPassword(req.body, token as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: false,
+    message: 'Password Reset Successfully!!!',
     data: result,
   });
 });
@@ -70,4 +84,5 @@ export const AuthControllers = {
   changePassword,
   getRefreshToken,
   forgetPassword,
+  resetPassword,
 };

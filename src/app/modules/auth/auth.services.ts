@@ -208,8 +208,8 @@ const forgetPassword = async (userId: string) => {
 
   const resetToken = createToken(
     jwtPayload,
-    configs.jwt_access_token as string,
-    '10m',
+    configs.jwt_reset_token as string,
+    configs.jwt_reset_expiresIn as string,
   );
 
   // create a new link:
@@ -218,9 +218,72 @@ const forgetPassword = async (userId: string) => {
   // return resetUILink;
   sendEmail(user.email, resetUILink);
 };
+
+// reset password services :
+const resetPassword = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
+  console.log(token, payload);
+  // check is the user Exists with provided ID:
+  const user = await User.isUserExistsByCustomId(payload.id);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'You account is not  Exists!!!');
+  }
+
+  // check is user deleted :
+  if (await User.isUserDeleted(user)) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!!');
+  }
+
+  // check is user blocked :
+  if (await User.isUserBlocked(user)) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!!!');
+  }
+
+  // check token is exists or not?:
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorization!!!');
+  }
+
+  // verify the token :
+  const decoded = jwt.verify(
+    token,
+    configs.jwt_reset_token as string,
+  ) as JwtPayload;
+
+  if (decoded && decoded.userId !== user.id) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!!!');
+  }
+
+  // hashing the newPassword:
+
+  const hashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(configs.bcrypt_solt_rounds as string),
+  );
+
+  // update the user password:
+  await User.findOneAndUpdate(
+    { id: user.id },
+    {
+      password: hashedPassword,
+      passwordChangedAt: new Date(),
+      needsPasswordChanged: false,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  return null;
+};
 export const AuthServices = {
   loginServices,
   changePasswordIntoDB,
   refreshToken,
   forgetPassword,
+  resetPassword,
 };
