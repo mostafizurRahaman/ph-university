@@ -2,11 +2,11 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import User from '../user/user.model';
 import { IChangePassword, ILoginUser } from './auth.interface';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import configs from '../../configs';
 
 import bcrypt from 'bcrypt';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendEmail';
 
 // login :
@@ -124,11 +124,12 @@ const changePasswordIntoDB = async (
 // get access token by refresh token:
 const refreshToken = async (token: string) => {
   // verify refresh_token is valid?:
-  const decoded = jwt.verify(
-    token,
-    configs.jwt_refresh_token as string,
-  ) as JwtPayload;
+  // const decoded = jwt.verify(
+  //   token,
+  //   configs.jwt_refresh_token as string,
+  // ) as JwtPayload;
 
+  const decoded = verifyToken(token, configs.jwt_refresh_token as string);
   // destructure decoded object :
   const { userId, iat } = decoded;
 
@@ -248,11 +249,7 @@ const resetPassword = async (
   }
 
   // verify the token :
-  const decoded = jwt.verify(
-    token,
-    configs.jwt_reset_token as string,
-  ) as JwtPayload;
-
+  const decoded = verifyToken(token, configs.jwt_refresh_token as string);
   if (decoded && decoded.userId !== user.id) {
     throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!!!');
   }
