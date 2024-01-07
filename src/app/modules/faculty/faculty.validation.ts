@@ -5,7 +5,7 @@ import { genders } from '../user/user.contants';
 
 const facultyValidationSchema = z.object({
   body: z.object({
-    password: z.string(),
+    password: z.string().optional(),
     faculty: z.object({
       name: UserNameZodValidationSchema,
       designation: z.string(),
@@ -22,7 +22,6 @@ const facultyValidationSchema = z.object({
       presentAddress: z.string(),
       permanentAddress: z.string(),
       academicDepartment: z.string(),
-      profileImg: z.string(),
     }),
   }),
 });

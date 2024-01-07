@@ -4,7 +4,7 @@ import { bloodGroups, genders } from '../user/user.contants';
 
 const createAdminValidationSchema = z.object({
   body: z.object({
-    password: z.string(),
+    password: z.string().optional(),
     admin: z.object({
       name: UserNameZodValidationSchema,
       designation: z.string(),
@@ -21,7 +21,6 @@ const createAdminValidationSchema = z.object({
       presentAddress: z.string(),
       permanentAddress: z.string(),
       managementDepartment: z.string(),
-      profileImg: z.string(),
     }),
   }),
 });
@@ -49,7 +48,6 @@ export const updateAdminValidationSchema = z.object({
         presentAddress: z.string().optional(),
         permanentAddress: z.string().optional(),
         managementDepartment: z.string().optional(),
-        profileImg: z.string().optional(),
       })
       .optional(),
   }),

@@ -19,4 +19,7 @@ export = {
   jwt_reset_expiresIn: process.env.JWT_RESET_EXPIRES_IN,
   my_gmail_app_password: process.env.MY_GMAIL_APP_PASSWORD,
   reset_password_frontend_url: process.env.RESET_PASSWORD_FRONTEND_URL,
+  cloud_name: process.env.CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
 };

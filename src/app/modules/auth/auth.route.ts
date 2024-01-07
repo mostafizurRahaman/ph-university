@@ -43,4 +43,6 @@ router
     AuthControllers.resetPassword,
   );
 
+
+
 export const AuthRoutes = router;

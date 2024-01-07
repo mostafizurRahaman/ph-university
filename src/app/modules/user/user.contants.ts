@@ -1,6 +1,8 @@
-import { TBloodGroup, TGender } from './user.interface';
+import { TBloodGroup, TGender, TUserStatus } from './user.interface';
 
 export const genders: TGender[] = ['male', 'female', 'others'];
+
+export const UserStatus: TUserStatus[] = ['in-progress', 'blocked'];
 export const bloodGroups: TBloodGroup[] = [
   'A+',
   'A-',
@@ -17,6 +19,3 @@ export const USER_ROLE = {
   student: 'student',
   faculty: 'faculty',
 } as const;
-
-
-

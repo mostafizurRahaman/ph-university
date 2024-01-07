@@ -13,6 +13,7 @@ export type TUser = {
   isDeleted?: boolean;
 };
 
+export type TUserStatus = 'in-progress' | 'blocked';
 // export type NewUser = {
 //   id: string;
 //   role: string;
