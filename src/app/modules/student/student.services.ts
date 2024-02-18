@@ -100,7 +100,13 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
     .fields();
 
   const result = await StudentQuery.modelQuery;
-  return result;
+
+  const meta = await StudentQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 // get data from db with aggregation:
@@ -120,6 +126,7 @@ const getStudentByIdFromDB = async (id: string) => {
   }
 
   const student = await Student.findById(id);
+
   return student;
 };
 

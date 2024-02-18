@@ -10,6 +10,7 @@ export = {
   database_url: process.env.DATABASE_URI,
   bcrypt_solt_rounds: process.env.BCRYPT_SOLT_ROUNDS,
   default_password: process.env.DEFAULT_PASSWORD,
+  superAdminPassword: process.env.SUPER_ADMIN_PASS,
   node_env: process.env.NODE_ENV,
   jwt_access_token: process.env.JWT_ACCESS_SECRET,
   jwt_refresh_token: process.env.JWT_REFRESH_SECRET,

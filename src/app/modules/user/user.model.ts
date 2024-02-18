@@ -34,7 +34,7 @@ const UserSchema = new Schema<TUser, IUserModel>(
     role: {
       type: String,
       enum: {
-        values: ['admin', 'student', 'faculty'],
+        values: ['super-admin', 'admin', 'student', 'faculty'],
         message: `{VALUE} can't be role`,
       },
       required: [true, 'Role is required'],

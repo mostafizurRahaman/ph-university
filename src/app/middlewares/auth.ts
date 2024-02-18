@@ -46,10 +46,15 @@ export const auth = (...requiredRoles: TUserRole[]) => {
     }
 
     //   verify jwt token :
-    const decoded = jwt.verify(
-      token,
-      configs.jwt_access_token as string,
-    ) as JwtPayload;
+    let decoded;
+    try {
+      decoded = jwt.verify(
+        token,
+        configs.jwt_access_token as string,
+      ) as JwtPayload;
+    } catch (err) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Your are not authorized!!');
+    }
 
     // destructure decoded object:
     const { userId, role, iat } = decoded;

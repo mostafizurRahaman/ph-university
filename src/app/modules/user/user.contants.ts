@@ -15,6 +15,7 @@ export const bloodGroups: TBloodGroup[] = [
 ];
 
 export const USER_ROLE = {
+  superAdmin: 'superAdmin',
   admin: 'admin',
   student: 'student',
   faculty: 'faculty',
