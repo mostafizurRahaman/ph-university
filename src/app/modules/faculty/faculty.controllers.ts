@@ -12,7 +12,8 @@ const getAllFaculties = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Faculties are Retrieved Successfully',
-    data: faculties,
+    meta: faculties.meta,
+    data: faculties.result,
   });
 });
 

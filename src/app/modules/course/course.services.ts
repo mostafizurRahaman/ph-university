@@ -25,7 +25,11 @@ const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
     .fields();
 
   const result = await courseQuery.modelQuery;
-  return result;
+  const meta = await courseQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 
 // get single course:
@@ -175,6 +179,20 @@ const assignFacultiesWithCourseIntoDB = async (
   return result;
 };
 
+//  ** Get All  Faculties From DB for Specific Courses:
+const getCourseFacultiesFromDB = async (id: string) => {
+  //  ** Check Is Course Exists:
+  const course = await CourseFaculty.findOne({ course: id }).populate(
+    'faculties',
+  );
+
+  if (!course) {
+    throw new AppError(httpStatus.NOT_FOUND, "Course Doesn't Exist !!!");
+  }
+
+  return course;
+};
+
 // remove faculties from course :
 const removeFacultiesFromCourseFromDB = async (
   id: string,
@@ -185,7 +203,7 @@ const removeFacultiesFromCourseFromDB = async (
     id,
     {
       $pull: {
-        faculties: { $in: payload},
+        faculties: { $in: payload },
       },
     },
     {
@@ -205,4 +223,5 @@ export const CourseServices = {
   updateSingleCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
   removeFacultiesFromCourseFromDB,
+  getCourseFacultiesFromDB,
 };

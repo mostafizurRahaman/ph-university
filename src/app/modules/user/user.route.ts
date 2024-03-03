@@ -12,7 +12,7 @@ import { upload } from '../../utils/sendImageToCloudinary';
 const router: Router = express.Router();
 
 router.route('/create-student').post(
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin,USER_ROLE.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -23,7 +23,7 @@ router.route('/create-student').post(
 );
 
 router.route('/create-faculty').post(
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin,USER_ROLE.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -34,6 +34,7 @@ router.route('/create-faculty').post(
 );
 
 router.route('/create-admin').post(
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -45,13 +46,13 @@ router.route('/create-admin').post(
 
 router
   .route('/me')
-  .get(auth('admin', 'faculty', 'student'), UserControllers.getMe);
+  .get(auth('admin', 'faculty', 'student', 'superAdmin'), UserControllers.getMe);
 
 // change user status route:
 router
   .route('/change-status/:id')
   .patch(
-    auth('admin'),
+    auth(USER_ROLE.superAdmin,USER_ROLE.admin),
     validateRequest(userStatusValidationSchema),
     UserControllers.changeUserStatus,
   );

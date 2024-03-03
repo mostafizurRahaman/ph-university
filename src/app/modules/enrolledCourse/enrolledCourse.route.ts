@@ -7,6 +7,9 @@ import { auth } from '../../middlewares/auth';
 
 // ** Create Route:
 const router = express.Router();
+//  ** my enrolled Course:
+
+
 
 // ** Create Enrolled Course:
 router
@@ -23,10 +26,17 @@ router
 router
   .route('/update-enrolled-course-marks')
   .put(
-    auth(USER_ROLE.faculty),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
     validateRequest(
       EnrolledCourseValidationSchema.updateEnrolledCourseMarksValidationSchema,
     ),
     EnrolledCourseController.updateEnrolledCourseMarks,
   );
+
+
+router
+  .route('/my-enrolled-course')
+  .get(auth(USER_ROLE.student), EnrolledCourseController.getMyEnrolledCourse);
+
+
 export const EnrolledCourseRouter = router;

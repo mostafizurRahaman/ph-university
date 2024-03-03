@@ -10,6 +10,7 @@ import Course from '../course/course.model';
 import mongoose from 'mongoose';
 import Faculty from '../faculty/faculty.model';
 import calculateGradePoints from './enrolledCourse.utils';
+import QueryBuilder from '../../builders/QueryBuilder';
 
 // ** Create Enrolled Course Services :
 const createEnrolledCourseIntoDB = async (
@@ -248,7 +249,7 @@ const updateEnrolledCourseMarksIntoDB = async (
 
     const totalMarks =
       classTest1 + midTerm + classTest2 + courseMarks.finalTerm;
-
+    // console.log(totalMarks);
     const result = calculateGradePoints(totalMarks);
 
     modifiedData['grade'] = result.grade;
@@ -278,7 +279,46 @@ const updateEnrolledCourseMarksIntoDB = async (
   return updateMarks;
 };
 
+//  ** My Enrolled Course :
+
+const myEnrolledCourseFromDB = async (
+  studentId: string,
+  query: Record<string, unknown>,
+) => {
+  const student = await Student.findOne({ id: studentId });
+
+  console.log(student);
+
+  //  ** Check Is Student Exists?
+  if (!student) {
+    throw new AppError(httpStatus.OK, 'Student Not Exists With This ID!!!');
+  }
+
+  //  ** Get Enrolled Courses For This Student :
+  const myEnrolledCourseQuery = new QueryBuilder(
+    EnrolledCourse.find({ student: student._id }).populate(
+      'semesterRegistration offeredCourse academicSemester academicFaculty academicDepartment  course faculty student',
+    ),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  
+  
+  const result = await myEnrolledCourseQuery.modelQuery
+  const meta = await myEnrolledCourseQuery.countTotal(); 
+
+
+  return {
+    meta, 
+    result, 
+  }; 
+};
+
 export const EnrolledCourseServices = {
   createEnrolledCourseIntoDB,
   updateEnrolledCourseMarksIntoDB,
+  myEnrolledCourseFromDB,
 };

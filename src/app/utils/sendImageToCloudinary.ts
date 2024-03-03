@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
 import configs from '../configs';
 import multer from 'multer';
 import path from 'path';
@@ -7,7 +7,6 @@ import fs from 'fs';
 
 import AppError from '../errors/AppError';
 import httpStatus from 'http-status';
-import { UploadApiResponse } from 'cloudinary';
 cloudinary.config({
   cloud_name: configs.cloud_name,
   api_key: configs.cloudinary_api_key,
@@ -17,7 +16,7 @@ cloudinary.config({
 const sendImageToCloudinary = (
   imageName: string,
   path: string,
-): Promise<UploadApiResponse | undefined> => {
+): Promise<Record<string, unknown>> => {
   return new Promise((resolve, reject) => {
     // upload file with cloudinary:
     cloudinary.uploader.upload(
@@ -29,7 +28,7 @@ const sendImageToCloudinary = (
         if (error) {
           reject("Image Didn't uploaded!!!");
         } else {
-          resolve(result);
+          resolve(result as UploadApiResponse);
           fs.unlink(path, (err) => {
             if (err) {
               console.log(err);

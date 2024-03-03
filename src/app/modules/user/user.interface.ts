@@ -8,7 +8,7 @@ export type TUser = {
   needsPasswordChanged?: boolean;
   passwordChangedAt?: Date;
   email: string;
-  role: 'super-admin' | 'admin' | 'student' | 'faculty';
+  role: 'superAdmin' | 'admin' | 'student' | 'faculty';
   status: 'in-progress' | 'blocked';
   isDeleted?: boolean;
 };

@@ -3,43 +3,71 @@ import { CoursesController } from './course.controller';
 import express from 'express';
 import { CourseValidationSchema } from './course.validation';
 import { auth } from '../../middlewares/auth';
+import { USER_ROLE } from '../user/user.contants';
 
 const router = express.Router();
 
 router
   .route('/create-course')
   .post(
-    auth('admin'),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(CourseValidationSchema.createCourseValidationSchema),
     CoursesController.createCourse,
   );
 
 router
   .route('/')
-  .get(auth('student', 'faculty', 'admin'), CoursesController.getAllCourses);
+  .get(
+    auth(
+      USER_ROLE.superAdmin,
+      USER_ROLE.admin,
+      USER_ROLE.faculty,
+      USER_ROLE.student,
+    ),
+    CoursesController.getAllCourses,
+  );
 
 router
   .route('/:courseId/assign-faculties')
   .put(
-    auth('admin'),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(CourseValidationSchema.CourseFacultiesValidation),
     CoursesController.assignFaculties,
+  );
+
+//  ** Get All Faculties From Specific Course:
+router
+  .route('/:courseId/get-faculties')
+  .get(
+    auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    CoursesController.getCourseFaculties,
   );
 
 router
   .route('/:courseId/remove-faculties')
   .put(
-    auth('admin'),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(CourseValidationSchema.CourseFacultiesValidation),
     CoursesController.removeFaculties,
   );
 
 router
   .route('/:id')
-  .get(CoursesController.getSingleCourseById)
-  .delete(auth('admin'), CoursesController.deleteSingleCourseById)
+  .get(
+    auth(
+      USER_ROLE.superAdmin,
+      USER_ROLE.admin,
+      USER_ROLE.faculty,
+      USER_ROLE.student,
+    ),
+    CoursesController.getSingleCourseById,
+  )
+  .delete(
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+    CoursesController.deleteSingleCourseById,
+  )
   .patch(
-    auth('admin'),
+    auth(USER_ROLE.superAdmin, USER_ROLE.admin),
     validateRequest(CourseValidationSchema.updateCourseValidationSchema),
     CoursesController.updateSingleCourseById,
   );

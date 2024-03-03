@@ -25,7 +25,8 @@ const getAllRegisteredAcademicSemester = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Academic Semester are Retrieved Successfully!!!',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

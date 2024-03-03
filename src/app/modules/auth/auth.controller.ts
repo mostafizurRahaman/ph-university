@@ -13,6 +13,8 @@ const login = catchAsync(async (req, res) => {
   res.cookie('refresh_token', refreshToken, {
     secure: configs.node_env === 'production',
     httpOnly: true,
+    sameSite: "none", 
+    maxAge: 365 * 24 * 60 * 60 * 1000 // convert 365 days to milliseconds: 
   });
 
  
