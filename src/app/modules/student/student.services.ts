@@ -8,18 +8,13 @@ import { TStudent } from './student.interface';
 import QueryBuilder from '../../builders/QueryBuilder';
 import { studentSearchFields } from './student.constants';
 
-
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   // Student paginate Query:
   const StudentQuery = new QueryBuilder(
     Student.find()
       .populate('admissionSemester')
-      .populate({
-        path: 'academicDepartment',
-        populate: {
-          path: 'academicFaculty',
-        },
-      }),
+      .populate('academicDepartment')
+      .populate('academicFaculty'),
     query,
   )
     .search(studentSearchFields)
@@ -113,6 +108,9 @@ const deleteStudentByIdFromDB = async (id: string) => {
     throw new AppError(err?.statusCode, err?.message);
   }
 };
+
+
+
 
 // update student services:
 const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {

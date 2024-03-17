@@ -9,8 +9,6 @@ import { auth } from '../../middlewares/auth';
 const router = express.Router();
 //  ** my enrolled Course:
 
-
-
 // ** Create Enrolled Course:
 router
   .route('/create-enrolled-course')
@@ -33,10 +31,14 @@ router
     EnrolledCourseController.updateEnrolledCourseMarks,
   );
 
-
 router
   .route('/my-enrolled-course')
   .get(auth(USER_ROLE.student), EnrolledCourseController.getMyEnrolledCourse);
 
-
+router
+  .route('/faculty-enrolled-course')
+  .get(
+    auth(USER_ROLE.faculty),
+    EnrolledCourseController.getFacultyEnrolledCourse,
+  );
 export const EnrolledCourseRouter = router;

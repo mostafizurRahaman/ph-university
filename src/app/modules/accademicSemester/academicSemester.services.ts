@@ -1,8 +1,12 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { academicSemesterCodeNameMapper } from './academicSemester.constant';
+import {
+  academicSemesterCodeNameMapper,
+  academicSemesterSearchTerm,
+} from './academicSemester.constant';
 import TAcademicSemester from './academicSemester.interface';
 import AcademicSemester from './academicSemester.model';
+import QueryBuilder from '../../builders/QueryBuilder';
 
 export const createAcademicSemesterIntoDB = async (
   payload: TAcademicSemester,
@@ -21,9 +25,20 @@ export const createAcademicSemesterIntoDB = async (
   return result;
 };
 
-export const getAcademicSemesterFromDB = async () => {
-  const result = await AcademicSemester.find();
-  return result;
+export const getAcademicSemesterFromDB = async (query: Record<string, unknown>) => {
+  const academicSemesterQuery = new QueryBuilder(AcademicSemester.find(), query)
+    .search(academicSemesterSearchTerm)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await academicSemesterQuery.modelQuery;
+  const meta = await academicSemesterQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 
 export const getAcademicSemesterByIdFromDB = async (semesterId: string) => {

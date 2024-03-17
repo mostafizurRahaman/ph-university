@@ -33,3 +33,10 @@ export const academicSemesterCodeNameMapper: TAcademicSemesterCodeNameMapper = {
 };
 
 export const academicSemesterCode: TAcademicSemesterCode[] = ['01', '02', '03'];
+
+export const academicSemesterSearchTerm = [
+  'name',
+  'year',
+  'startMonth',
+  'endMonth',
+];

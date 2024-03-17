@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
 import Faculty from '../faculty/faculty.model';
 import calculateGradePoints from './enrolledCourse.utils';
 import QueryBuilder from '../../builders/QueryBuilder';
+import { RegistrationStatus } from '../semesterRegistration/semesterRegistration.constant';
 
 // ** Create Enrolled Course Services :
 const createEnrolledCourseIntoDB = async (
@@ -305,20 +306,69 @@ const myEnrolledCourseFromDB = async (
     .sort()
     .paginate()
     .fields();
-  
-  
-  const result = await myEnrolledCourseQuery.modelQuery
-  const meta = await myEnrolledCourseQuery.countTotal(); 
 
+  const result = await myEnrolledCourseQuery.modelQuery;
+  const meta = await myEnrolledCourseQuery.countTotal();
 
   return {
-    meta, 
-    result, 
-  }; 
+    meta,
+    result,
+  };
+};
+
+// ** Get All Enrolled Courses **
+const GetFacultyEnrolledCourse = async (
+  query: Record<string, unknown>,
+  facultyId: string,
+) => {
+  // ** Check Is faculty Exists ?
+  const faculty = await Faculty.findOne({ id: facultyId });
+
+  if (!faculty) {
+    throw new AppError(httpStatus.NOT_FOUND, "Facylty Doesn't Exist!!");
+  }
+
+  // ** Current ONGOING Semester **
+  const currentOngoingSemester = await SemesterRegistration.findOne({
+    status: RegistrationStatus.ONGOING,
+  });
+
+  if (!currentOngoingSemester) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'There Is No Ongoing Semester Exits!!!',
+    );
+  }
+
+  console.log(currentOngoingSemester);
+
+  const enrolledCourseQuery = new QueryBuilder(
+    EnrolledCourse.find({
+      faculty: faculty._id,
+      semesterRegistration: currentOngoingSemester._id,
+      academicSemester: currentOngoingSemester.academicSemester,
+    }).populate(
+      'semesterRegistration  offeredCourse academicSemester academicFaculty academicDepartment faculty course  student',
+    ),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const data = await enrolledCourseQuery.modelQuery;
+  const meta = await enrolledCourseQuery.countTotal();
+
+  return {
+    data,
+    meta,
+  };
 };
 
 export const EnrolledCourseServices = {
   createEnrolledCourseIntoDB,
   updateEnrolledCourseMarksIntoDB,
   myEnrolledCourseFromDB,
+  GetFacultyEnrolledCourse,
 };

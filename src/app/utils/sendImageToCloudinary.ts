@@ -4,9 +4,8 @@ import multer from 'multer';
 import path from 'path';
 
 import fs from 'fs';
+import { removeWhiteSpace } from './RemoveWhiteSpace';
 
-import AppError from '../errors/AppError';
-import httpStatus from 'http-status';
 cloudinary.config({
   cloud_name: configs.cloud_name,
   api_key: configs.cloudinary_api_key,
@@ -17,12 +16,13 @@ const sendImageToCloudinary = (
   imageName: string,
   path: string,
 ): Promise<Record<string, unknown>> => {
+  console.log(removeWhiteSpace(imageName), 'public_id');
   return new Promise((resolve, reject) => {
     // upload file with cloudinary:
     cloudinary.uploader.upload(
       path,
       {
-        public_id: imageName,
+        public_id: removeWhiteSpace(imageName),
       },
       function (error, result) {
         if (error) {
@@ -65,12 +65,7 @@ export const upload = multer({
     if (validExt.test(path.extname(file.originalname))) {
       cb(null, true);
     } else {
-      cb(
-        new AppError(
-          httpStatus.NOT_ACCEPTABLE,
-          'Only png/jpeg/jpg acceptable!!!',
-        ),
-      );
+      cb(null, false);
     }
   },
 });

@@ -76,6 +76,7 @@ const getMe = catchAsync(async (req, res) => {
 const changeUserStatus = catchAsync(async (req, res) => {
   const id = req.params.id;
   const status = req.body.status;
+  console.log(status);
 
   const result = await UserServices.changeUserStatusIntoDB(id, status);
 

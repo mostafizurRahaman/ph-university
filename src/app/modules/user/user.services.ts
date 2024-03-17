@@ -136,16 +136,19 @@ const createFacultyIntoDB = async (
   // generate a new faculty:
   userData.id = await generateFacultyId();
 
+  //  ** Check isAcademicDepartment Exists?:
+  const isAcademicDepartmentExists = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
 
-  //  ** Check isAcademicDepartment Exists?: 
-  const isAcademicDepartmentExists = await AcademicDepartment.findById(payload.academicDepartment); 
-
-
-  if(!isAcademicDepartmentExists){
-     throw new AppError(httpStatus.NOT_FOUND, "Academic Department Is Not Exists!!")
+  if (!isAcademicDepartmentExists) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Academic Department Is Not Exists!!',
+    );
   }
 
-  payload.academicFaculty = isAcademicDepartmentExists.academicFaculty; 
+  payload.academicFaculty = isAcademicDepartmentExists.academicFaculty;
 
   const session = await mongoose.startSession();
 
@@ -159,20 +162,17 @@ const createFacultyIntoDB = async (
       throw new Error('Failed  to Create User!!!');
     }
 
-
     if (file) {
       // ** upload image into cloudinary:
       const imageName = `${userData.id}_${payload.name.firstName}`;
       const path = file.path;
       const { secure_url } = await sendImageToCloudinary(imageName, path);
 
-      payload.profileImg = secure_url as string; 
+      payload.profileImg = secure_url as string;
     }
-  
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
-   
 
     const newFaculty = await Faculty.create([payload], { session });
 
@@ -225,14 +225,12 @@ const createAdminIntoDB = async (
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create User!!!');
     }
 
-
     if (file) {
       // ** upload image to cloudinary :
       const imageName = `${userData.id}_${payload.name.firstName}`;
       const path = file.path;
       const { secure_url } = await sendImageToCloudinary(imageName, path);
-      payload.profileImg = secure_url as string; 
-      
+      payload.profileImg = secure_url as string;
     }
 
     // set id and user  to payload for reference:
@@ -279,11 +277,13 @@ const getMe = async (userId: string, role: string) => {
 
 // change user status services:
 const changeUserStatusIntoDB = async (id: string, status: string) => {
-  console.log(id, status);
+  console.log(status);
   const result = await User.findByIdAndUpdate(
     id,
     {
-      status,
+      $set: {
+        status: status,
+      },
     },
     {
       new: true,

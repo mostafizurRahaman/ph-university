@@ -18,13 +18,16 @@ export const createAcademicSemester = catchAsync(async (req, res) => {
 
 export const getAllAcademicSemester = catchAsync(async (req, res) => {
   // call the services to get all academic semester:
-  const semesters = await AcademicSemesterServices.getAcademicSemesterFromDB();
+  const semesters = await AcademicSemesterServices.getAcademicSemesterFromDB(
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Academic Semester Found successfully',
-    data: semesters,
+    meta: semesters.meta,
+    data: semesters.result,
   });
 });
 

@@ -39,27 +39,46 @@ const updateEnrolledCourseMarks = catchAsync(async (req, res) => {
   });
 });
 
+//  ** My Enrolled Course :
+const getMyEnrolledCourse = catchAsync(async (req, res) => {
+  const studentId = req.user.userId;
+  const result = await EnrolledCourseServices.myEnrolledCourseFromDB(
+    studentId,
+    req.query,
+  );
 
-//  ** My Enrolled Course : 
-const getMyEnrolledCourse = catchAsync(async (req, res) => { 
-  const studentId = req.user.userId; 
-  const result = await EnrolledCourseServices.myEnrolledCourseFromDB(studentId, req.query)
-
-  // ** Send Response : 
+  // ** Send Response :
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "My Enrolled Courses Retrieved Successfully!!", 
+    message: 'My Enrolled Courses Retrieved Successfully!!',
     meta: result.meta,
-    data: result.result,     
-  })
-})
+    data: result.result,
+  });
+});
 
+// ** Get Faculty Enrolled Course  **
+const getFacultyEnrolledCourse = catchAsync(async (req, res) => {
+  const facultyId = req.user.userId;
+  const result = await EnrolledCourseServices.GetFacultyEnrolledCourse(
+    req.query,
+    facultyId,
+  );
 
+  // ** send response **
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Enrolled Courses For Faculty Retrieved Successfully!!!',
+    meta: result.meta,
+    data: result.data,
+  });
+});
 
 // ** Export Enrolled Course Controller:
 export const EnrolledCourseController = {
   createEnrolledCourse,
   updateEnrolledCourseMarks,
   getMyEnrolledCourse,
+  getFacultyEnrolledCourse,
 };

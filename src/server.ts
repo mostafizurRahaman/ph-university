@@ -25,7 +25,8 @@ async function main() {
 main();
 
 // handle unhandledRejection for asynchronous error:
-process.on('unhandledRejection', () => {
+process.on('unhandledRejection', (reason, promise) => {
+  console.log(reason, promise)
   console.log(red(`Server detected UnHandledRejection 😡`));
   if (server) {
     server.close(() => {
